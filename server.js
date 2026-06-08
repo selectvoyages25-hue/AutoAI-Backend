@@ -169,8 +169,8 @@ app.post("/analyze", async (req, res) => {
   const targetKm = toNumber(req.body.km);
 
   console.log("🔎 RECHERCHE SIMPLIFIÉE:", searchTerm);
-  console.log("📅 FILTRE ANNÉE:", targetYear - 1, "à", targetYear + 1);
-  console.log("📍 FILTRE KM:", targetKm - 10000, "à", targetKm + 10000);
+  console.log("📅 FILTRE ANNÉE:", targetYear - 5, "à", targetYear + 5);
+  console.log("📍 FILTRE KM:", targetKm - 50000, "à", targetKm + 50000);
 
   let prices = [];
 
