@@ -106,10 +106,10 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
       const text = document.body.innerText || "";
       const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
-      const minYear = targetYear - 1;
-      const maxYear = targetYear + 1;
-      const minKm = targetKm - 10000;
-      const maxKm = targetKm + 10000;
+      const minYear = targetYear - 2;
+      const maxYear = targetYear + 2;
+      const minKm = targetKm - 30000;
+      const maxKm = targetKm + 30000;
 
       const results = [];
 
