@@ -66,7 +66,10 @@ function buildAutoScoutUrl(searchTerm) {
 }
 
 async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({
+  headless: true,
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
   try {
     const page = await browser.newPage();
