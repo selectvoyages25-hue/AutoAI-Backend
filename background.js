@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (message.type === "ANALYZE") {
 
-   fetch("https://autoai-backend-7kqv.onrender.com/analyze", {
+   fetch("https://autoai-backend-loz7.onrender.com/analyze", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
