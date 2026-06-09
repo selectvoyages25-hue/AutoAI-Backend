@@ -326,19 +326,20 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
         const kmMatch = block.match(/[\d\s\u202F\u00A0.]+km/i);
         const adKm = kmMatch ? toNum(kmMatch[0]) : 0;
 
-        if (!price || price < 1000 || price > 90000) continue;
+       if (!price || !adYear || !adKm) continue;
+       if (price < 1000 || price > 100000) continue;
 
-        const yearOk = !adYear || (adYear >= minYear && adYear <= maxYear);
-        const kmOk = !adKm || (adKm >= minKm && adKm <= maxKm);
+       const yearOk = adYear >= minYear && adYear <= maxYear;
+       const kmOk = adKm >= minKm && adKm <= maxKm;
 
-        if (yearOk && kmOk) {
-          results.push({
-            price,
-            year: adYear,
-            km: adKm
-          });
-        }
+       if (yearOk && kmOk) {
+       results.push({
+       price,
+       year: adYear,
+       km: adKm
+      });
       }
+   } 
 
       const unique = [];
       const seen = new Set();
