@@ -58,22 +58,30 @@ function buildAutoScoutUrl(searchTerm) {
     return "https://www.autoscout24.fr/lst/citroen/xsara-picasso?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
   }
 
+  if (text.includes("citroen c4 picasso")) {
+    return "https://www.autoscout24.fr/lst/citroen/c4-picasso?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
+  }
+
   if (text.includes("peugeot 2008")) {
     return "https://www.autoscout24.fr/lst/peugeot/2008?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
   }
 
   if (text.includes("peugeot 208")) {
-  return "https://www.autoscout24.fr/lst/peugeot/208?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
-}
+    return "https://www.autoscout24.fr/lst/peugeot/208?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
+  }
+
+  if (text.includes("peugeot 3008")) {
+    return "https://www.autoscout24.fr/lst/peugeot/3008?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
+  }
 
   return `https://www.autoscout24.fr/lst?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0&q=${encodeURIComponent(searchTerm)}`;
 }
 
 async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
   const browser = await chromium.launch({
-  headless: true,
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
-});
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  });
 
   try {
     const page = await browser.newPage();
@@ -88,7 +96,7 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
 
     await page.waitForTimeout(10000);
 
-    const prices = await page.evaluate(({ searchTerm, targetYear, targetKm }) => {
+    const ads = await page.evaluate(({ searchTerm, targetYear, targetKm }) => {
       const clean = (txt) =>
         String(txt || "")
           .toLowerCase()
@@ -102,6 +110,7 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
       const normalizePrice = (priceRaw) => {
         let digits = String(priceRaw || "").replace(/[^\d]/g, "");
 
+        // Corrige certains prix AutoScout du type 17 9991
         if (digits.length === 6 && digits.endsWith("1")) {
           digits = digits.slice(0, -1);
         }
@@ -121,21 +130,25 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
       const results = [];
 
       for (let i = 0; i < lines.length; i++) {
-        const current = clean(lines[i]);
-
-        if (!current.includes(wanted)) continue;
-
-        const blockLines = lines.slice(i, i + 25);
+        const blockLines = lines.slice(i, i + 35);
         const block = blockLines.join(" ");
         const normalizedBlock = clean(block);
 
+        if (!normalizedBlock.includes(wanted)) continue;
         if (normalizedBlock.includes("aircross")) continue;
+
+        let price = 0;
 
         const euroIndex = blockLines.findIndex(line => clean(line) === "€");
 
-        if (euroIndex === -1 || !blockLines[euroIndex + 1]) continue;
-
-        const price = normalizePrice(blockLines[euroIndex + 1]);
+        if (euroIndex !== -1 && blockLines[euroIndex + 1]) {
+          price = normalizePrice(blockLines[euroIndex + 1]);
+        } else {
+          const priceMatch = block.match(/€\s*[\d\s\u202F\u00A0.]+/);
+          if (priceMatch) {
+            price = normalizePrice(priceMatch[0]);
+          }
+        }
 
         const yearMatch = block.match(/\b(19|20)\d{2}\b/);
         const adYear = yearMatch ? parseInt(yearMatch[0]) : 0;
@@ -143,20 +156,37 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
         const kmMatch = block.match(/[\d\s\u202F\u00A0.]+km/i);
         const adKm = kmMatch ? toNum(kmMatch[0]) : 0;
 
-        if (!price || !adYear || !adKm) continue;
+        if (!price || price < 1000 || price > 100000) continue;
 
-        const yearOk = adYear >= minYear && adYear <= maxYear;
-        const kmOk = adKm >= minKm && adKm <= maxKm;
+        const yearOk = !adYear || (adYear >= minYear && adYear <= maxYear);
+        const kmOk = !adKm || (adKm >= minKm && adKm <= maxKm);
 
-        if (yearOk && kmOk && price > 1000 && price < 100000) {
-          results.push(price);
+        if (yearOk && kmOk) {
+          results.push({
+            price,
+            year: adYear,
+            km: adKm
+          });
         }
       }
 
-      return [...new Set(results)];
+      const unique = [];
+      const seen = new Set();
+
+      for (const ad of results) {
+        const key = `${ad.price}-${ad.year}-${ad.km}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          unique.push(ad);
+        }
+      }
+
+      return unique.slice(0, 10);
     }, { searchTerm, targetYear, targetKm });
 
-    return prices.slice(0, 10);
+    console.log("🚗 ANNONCES AUTOSCOUT:", ads);
+
+    return ads.map(ad => ad.price);
   } finally {
     await browser.close();
   }
@@ -174,7 +204,7 @@ app.post("/analyze", async (req, res) => {
 
   console.log("🔎 RECHERCHE SIMPLIFIÉE:", searchTerm);
   console.log("📅 FILTRE ANNÉE:", targetYear - 5, "à", targetYear + 5);
-  console.log("📍 FILTRE KM:", targetKm - 50000, "à", targetKm + 50000);
+  console.log("📍 FILTRE KM:", 0, "à", 300000);
 
   let prices = [];
 
@@ -214,8 +244,8 @@ app.post("/analyze", async (req, res) => {
     margin,
     score,
     sampleCount: prices.length,
-    filterYear: `${targetYear - 1}-${targetYear + 1}`,
-    filterKm: `${targetKm - 10000}-${targetKm + 10000}`
+    filterYear: `${targetYear - 5}-${targetYear + 5}`,
+    filterKm: `0-300000`
   });
 });
 
