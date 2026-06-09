@@ -296,8 +296,8 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
 
       const minYear = targetYear - 1;
       const maxYear = targetYear + 1;
-      const minKm = Math.max(0, targetKm - 10000);
-      const maxKm = targetKm + 10000;
+      const minKm = Math.max(0, targetKm - 20000);
+      const maxKm = targetKm + 20000;
 
       const results = [];
 
@@ -375,8 +375,8 @@ app.post("/analyze", async (req, res) => {
 
   const minYear = targetYear - 1;
   const maxYear = targetYear + 1;
-  const minKm = Math.max(0, targetKm - 10000);
-  const maxKm = targetKm + 10000;
+  const minKm = Math.max(0, targetKm - 20000);
+  const maxKm = targetKm + 20000;
 
   console.log("🔎 RECHERCHE SIMPLIFIÉE:", searchTerm);
   console.log("📅 FILTRE ANNÉE:", minYear, "à", maxYear);
