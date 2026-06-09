@@ -62,6 +62,10 @@ function buildAutoScoutUrl(searchTerm) {
     return "https://www.autoscout24.fr/lst/peugeot/2008?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
   }
 
+  if (text.includes("peugeot 208")) {
+  return "https://www.autoscout24.fr/lst/peugeot/208?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
+}
+
   return `https://www.autoscout24.fr/lst?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0&q=${encodeURIComponent(searchTerm)}`;
 }
 
