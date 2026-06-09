@@ -111,8 +111,8 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
 
       const minYear = targetYear - 5;
       const maxYear = targetYear + 5;
-      const minKm = targetKm - 50000;
-      const maxKm = targetKm + 50000;
+      const minKm = 0;
+      const maxKm = 300000;
 
       const results = [];
 
