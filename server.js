@@ -110,7 +110,6 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
       const normalizePrice = (priceRaw) => {
         let digits = String(priceRaw || "").replace(/[^\d]/g, "");
 
-        // Corrige certains prix AutoScout du type 17 9991
         if (digits.length === 6 && digits.endsWith("1")) {
           digits = digits.slice(0, -1);
         }
@@ -122,10 +121,10 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
       const text = document.body.innerText || "";
       const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
-      const minYear = targetYear - 5;
-      const maxYear = targetYear + 5;
-      const minKm = 0;
-      const maxKm = 300000;
+      const minYear = targetYear - 1;
+      const maxYear = targetYear + 1;
+      const minKm = Math.max(0, targetKm - 10000);
+      const maxKm = targetKm + 10000;
 
       const results = [];
 
@@ -145,9 +144,7 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
           price = normalizePrice(blockLines[euroIndex + 1]);
         } else {
           const priceMatch = block.match(/€\s*[\d\s\u202F\u00A0.]+/);
-          if (priceMatch) {
-            price = normalizePrice(priceMatch[0]);
-          }
+          if (priceMatch) price = normalizePrice(priceMatch[0]);
         }
 
         const yearMatch = block.match(/\b(19|20)\d{2}\b/);
@@ -156,7 +153,7 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
         const kmMatch = block.match(/[\d\s\u202F\u00A0.]+km/i);
         const adKm = kmMatch ? toNum(kmMatch[0]) : 0;
 
-        if (!price || price < 1000 || price > 100000) continue;
+        if (!price || price < 1000 || price > 90000) continue;
 
         const yearOk = !adYear || (adYear >= minYear && adYear <= maxYear);
         const kmOk = !adKm || (adKm >= minKm && adKm <= maxKm);
@@ -202,9 +199,14 @@ app.post("/analyze", async (req, res) => {
   const targetYear = toNumber(req.body.year);
   const targetKm = toNumber(req.body.km);
 
+  const minYear = targetYear - 1;
+  const maxYear = targetYear + 1;
+  const minKm = Math.max(0, targetKm - 10000);
+  const maxKm = targetKm + 10000;
+
   console.log("🔎 RECHERCHE SIMPLIFIÉE:", searchTerm);
-  console.log("📅 FILTRE ANNÉE:", targetYear - 5, "à", targetYear + 5);
-  console.log("📍 FILTRE KM:", 0, "à", 300000);
+  console.log("📅 FILTRE ANNÉE:", minYear, "à", maxYear);
+  console.log("📍 FILTRE KM:", minKm, "à", maxKm);
 
   let prices = [];
 
@@ -244,8 +246,8 @@ app.post("/analyze", async (req, res) => {
     margin,
     score,
     sampleCount: prices.length,
-    filterYear: `${targetYear - 5}-${targetYear + 5}`,
-    filterKm: `0-300000`
+    filterYear: `${minYear}-${maxYear}`,
+    filterKm: `${minKm}-${maxKm}`
   });
 });
 
