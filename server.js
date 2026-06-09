@@ -27,17 +27,108 @@ function simplifySearch(title) {
   const text = normalize(title);
 
   const knownModels = [
-    "citroen c3",
-    "citroen xsara picasso",
+    // CITROEN
+    "citroen c3 picasso",
     "citroen c4 picasso",
-    "peugeot 2008",
-    "peugeot 3008",
+    "citroen xsara picasso",
+    "citroen c1",
+    "citroen c2",
+    "citroen c3",
+    "citroen c4",
+    "citroen c5",
+    "citroen berlingo",
+
+    // PEUGEOT
+    "peugeot 108",
+    "peugeot 107",
+    "peugeot 206",
+    "peugeot 207",
     "peugeot 208",
+    "peugeot 2008",
+    "peugeot 307",
+    "peugeot 308",
+    "peugeot 3008",
+    "peugeot 407",
+    "peugeot 508",
+    "peugeot 5008",
+    "peugeot partner",
+
+    // RENAULT
+    "renault twingo",
     "renault clio",
     "renault megane",
+    "renault scenic",
+    "renault captur",
+    "renault kadjar",
+    "renault kangoo",
+    "renault trafic",
+
+    // DACIA
+    "dacia sandero",
+    "dacia duster",
+    "dacia logan",
+    "dacia lodgy",
+
+    // VOLKSWAGEN
+    "volkswagen polo",
     "volkswagen golf",
+    "volkswagen passat",
+    "volkswagen tiguan",
+    "volkswagen touran",
+    "volkswagen caddy",
+
+    // OPEL
+    "opel corsa",
+    "opel astra",
+    "opel mokka",
+    "opel meriva",
+    "opel zafira",
+    "opel insignia",
+
+    // FORD
+    "ford fiesta",
+    "ford focus",
+    "ford c-max",
+    "ford kuga",
+    "ford mondeo",
+    "ford transit",
+
+    // FIAT
+    "fiat 500",
+    "fiat panda",
+    "fiat punto",
+    "fiat tipo",
+    "fiat doblo",
+
+    // AUDI / BMW / MERCEDES
+    "audi a1",
     "audi a3",
-    "bmw serie 3"
+    "audi a4",
+    "audi q3",
+    "audi q5",
+    "bmw serie 1",
+    "bmw serie 3",
+    "bmw x1",
+    "bmw x3",
+    "mercedes classe a",
+    "mercedes classe b",
+    "mercedes classe c",
+
+    // NISSAN / TOYOTA / KIA / HYUNDAI
+    "nissan micra",
+    "nissan juke",
+    "nissan qashqai",
+    "toyota yaris",
+    "toyota auris",
+    "toyota corolla",
+    "toyota rav4",
+    "kia picanto",
+    "kia rio",
+    "kia sportage",
+    "hyundai i10",
+    "hyundai i20",
+    "hyundai i30",
+    "hyundai tucson"
   ];
 
   for (const model of knownModels) {
@@ -50,28 +141,110 @@ function simplifySearch(title) {
 function buildAutoScoutUrl(searchTerm) {
   const text = normalize(searchTerm);
 
-  if (text.includes("citroen c3")) {
-    return "https://www.autoscout24.fr/lst/citroen/c3?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
-  }
+  const routes = {
+    "citroen c3 picasso": "citroen/c3-picasso",
+    "citroen c4 picasso": "citroen/c4-picasso",
+    "citroen xsara picasso": "citroen/xsara-picasso",
+    "citroen c1": "citroen/c1",
+    "citroen c2": "citroen/c2",
+    "citroen c3": "citroen/c3",
+    "citroen c4": "citroen/c4",
+    "citroen c5": "citroen/c5",
+    "citroen berlingo": "citroen/berlingo",
 
-  if (text.includes("citroen xsara picasso")) {
-    return "https://www.autoscout24.fr/lst/citroen/xsara-picasso?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
-  }
+    "peugeot 107": "peugeot/107",
+    "peugeot 108": "peugeot/108",
+    "peugeot 206": "peugeot/206",
+    "peugeot 207": "peugeot/207",
+    "peugeot 208": "peugeot/208",
+    "peugeot 2008": "peugeot/2008",
+    "peugeot 307": "peugeot/307",
+    "peugeot 308": "peugeot/308",
+    "peugeot 3008": "peugeot/3008",
+    "peugeot 407": "peugeot/407",
+    "peugeot 508": "peugeot/508",
+    "peugeot 5008": "peugeot/5008",
+    "peugeot partner": "peugeot/partner",
 
-  if (text.includes("citroen c4 picasso")) {
-    return "https://www.autoscout24.fr/lst/citroen/c4-picasso?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
-  }
+    "renault twingo": "renault/twingo",
+    "renault clio": "renault/clio",
+    "renault megane": "renault/megane",
+    "renault scenic": "renault/scenic",
+    "renault captur": "renault/captur",
+    "renault kadjar": "renault/kadjar",
+    "renault kangoo": "renault/kangoo",
+    "renault trafic": "renault/trafic",
 
-  if (text.includes("peugeot 2008")) {
-    return "https://www.autoscout24.fr/lst/peugeot/2008?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
-  }
+    "dacia sandero": "dacia/sandero",
+    "dacia duster": "dacia/duster",
+    "dacia logan": "dacia/logan",
+    "dacia lodgy": "dacia/lodgy",
 
-  if (text.includes("peugeot 208")) {
-    return "https://www.autoscout24.fr/lst/peugeot/208?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
-  }
+    "volkswagen polo": "volkswagen/polo",
+    "volkswagen golf": "volkswagen/golf",
+    "volkswagen passat": "volkswagen/passat",
+    "volkswagen tiguan": "volkswagen/tiguan",
+    "volkswagen touran": "volkswagen/touran",
+    "volkswagen caddy": "volkswagen/caddy",
 
-  if (text.includes("peugeot 3008")) {
-    return "https://www.autoscout24.fr/lst/peugeot/3008?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0";
+    "opel corsa": "opel/corsa",
+    "opel astra": "opel/astra",
+    "opel mokka": "opel/mokka",
+    "opel meriva": "opel/meriva",
+    "opel zafira": "opel/zafira",
+    "opel insignia": "opel/insignia",
+
+    "ford fiesta": "ford/fiesta",
+    "ford focus": "ford/focus",
+    "ford c-max": "ford/c-max",
+    "ford kuga": "ford/kuga",
+    "ford mondeo": "ford/mondeo",
+    "ford transit": "ford/transit",
+
+    "fiat 500": "fiat/500",
+    "fiat panda": "fiat/panda",
+    "fiat punto": "fiat/punto",
+    "fiat tipo": "fiat/tipo",
+    "fiat doblo": "fiat/doblo",
+
+    "audi a1": "audi/a1",
+    "audi a3": "audi/a3",
+    "audi a4": "audi/a4",
+    "audi q3": "audi/q3",
+    "audi q5": "audi/q5",
+
+    "bmw serie 1": "bmw/serie-1",
+    "bmw serie 3": "bmw/serie-3",
+    "bmw x1": "bmw/x1",
+    "bmw x3": "bmw/x3",
+
+    "mercedes classe a": "mercedes-benz/classe-a",
+    "mercedes classe b": "mercedes-benz/classe-b",
+    "mercedes classe c": "mercedes-benz/classe-c",
+
+    "nissan micra": "nissan/micra",
+    "nissan juke": "nissan/juke",
+    "nissan qashqai": "nissan/qashqai",
+
+    "toyota yaris": "toyota/yaris",
+    "toyota auris": "toyota/auris",
+    "toyota corolla": "toyota/corolla",
+    "toyota rav4": "toyota/rav-4",
+
+    "kia picanto": "kia/picanto",
+    "kia rio": "kia/rio",
+    "kia sportage": "kia/sportage",
+
+    "hyundai i10": "hyundai/i10",
+    "hyundai i20": "hyundai/i20",
+    "hyundai i30": "hyundai/i30",
+    "hyundai tucson": "hyundai/tucson"
+  };
+
+  for (const model in routes) {
+    if (text.includes(model)) {
+      return `https://www.autoscout24.fr/lst/${routes[model]}?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0`;
+    }
   }
 
   return `https://www.autoscout24.fr/lst?atype=C&cy=F&ustate=N%2CU&sort=standard&desc=0&q=${encodeURIComponent(searchTerm)}`;
