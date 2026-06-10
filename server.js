@@ -393,6 +393,22 @@ app.post("/analyze", async (req, res) => {
 
   prices.sort((a, b) => a - b);
 
+  if (prices.length === 0) {
+  return res.json({
+    title: rawTitle,
+    searchTerm,
+    source: "AutoScout24",
+    price: autoPrice + " €",
+    marketAverage: 0,
+    minPrice: 0,
+    maxPrice: 0,
+    margin: 0,
+    score: 0,
+    sampleCount: 0,
+    warning: "Aucune annonce comparable trouvée avec année/km proches"
+  });
+}
+
   const minPrice = prices.length ? prices[0] : 0;
   const maxPrice = prices.length ? prices[prices.length - 1] : 0;
 
