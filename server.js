@@ -352,7 +352,7 @@ async function getAutoScoutPrices(searchTerm, targetYear, targetKm) {
         }
       }
 
-      return unique.slice(0, 10);
+      return unique.slice(0, 5);
     }, { searchTerm, targetYear, targetKm });
 
     console.log("🚗 ANNONCES AUTOSCOUT:", ads);
